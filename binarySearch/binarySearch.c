@@ -54,7 +54,6 @@ int main(int argc, char *argv[])
     }
     if(left > right) printf("Numero no encontrado");
 
-    // Es una buena práctica liberar la memoria reservada al finalizar
     free(arreglito);
 
     return 0;
