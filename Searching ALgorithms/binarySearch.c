@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "tiempo.h"
 
 int comparar(const void *left, const void *right){
     return(*(int*)left - *(int*)right);
@@ -12,8 +13,9 @@ int main(int argc, char *argv[])
 {
     // Convierte el primer argumento recibido a entero para definir el tamaño del arreglo
     int n = atoi(argv[1]);
+    int numeritoABuscar = atoi(argv[2]);
     int *arreglito;
-
+    double utime0, stime0, wtime0,utime1, stime1, wtime1; //Variables para medición de tiempos
     // Reserva memoria dinámica para el arreglo principal
     arreglito = malloc(n * sizeof(int));
     if(arreglito == NULL)
@@ -25,10 +27,9 @@ int main(int argc, char *argv[])
     // Lee los n números desde la entrada estándar y los guarda en arreglito
     for(int i = 0; i < n; i++)
         scanf("%d", &arreglito[i]);
-
-    // Lee el número a buscar
-    int numeritoABuscar; scanf("%d", &numeritoABuscar);
-
+  //--------------------------------------------------------------------
+    //inicio de medicion
+    uswtime(&utime0, &stime0, &wtime0);
     // Ordena el arreglo antes de aplicar la búsqueda binaria
     qsort(arreglito, n, sizeof(int), comparar);
 
@@ -52,8 +53,17 @@ int main(int argc, char *argv[])
             mid = (left + right) / 2;
         }
     }
+    //Evaluar los tiempos de ejecución 
+	//******************************************************************
+	uswtime(&utime1, &stime1, &wtime1);
     if(left > right) printf("Numero no encontrado");
-
+    //Mostrar los tiempos en formato exponecial
+	printf("\n");
+	printf("real (Tiempo total)  %.10e s\n",  wtime1 - wtime0);
+	printf("user (Tiempo de procesamiento en CPU) %.10e s\n",  utime1 - utime0);
+	printf("sys (Tiempo en acciónes de E/S)  %.10e s\n",  stime1 - stime0);
+	printf("CPU/Wall   %.10f %% \n",100.0 * (utime1 - utime0 + stime1 - stime0) / (wtime1 - wtime0));
+	printf("\n");
     free(arreglito);
 
     return 0;

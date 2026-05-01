@@ -9,7 +9,7 @@ Run: ./Lineal_Search [Array Lenght] [Number to find] <[Array]
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include "tiempo.h"
 pthread_t Threads[2];
 int FoundIdx = -1;
 
@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
   int n = atoi(argv[1]);
   // Lectura del numero a buscar
   int number = atoi(argv[2]);
+  double utime0, stime0, wtime0,utime1, stime1, wtime1; //Variables para medición de tiempos
   // Calculo de la mitad del arreglo
   int midIdx = ((n - 1) / 2);
   // Asignacion de memoria dinamica
@@ -56,6 +57,10 @@ int main(int argc, char *argv[])
   B[1].endIdx = n - 1;
   B[1].number = number;
   B[1].id = 1;
+  //******************************************************************	
+	//Iniciar el conteo del tiempo para las evaluaciones de rendimiento
+	//******************************************************************	
+	uswtime(&utime0, &stime0, &wtime0);
   // Llamada de hilos
   for (int i = 0; i < 2; i++)
   {
@@ -66,6 +71,10 @@ int main(int argc, char *argv[])
   {
     pthread_join(Threads[i], NULL);
   }
+	//******************************************************************	
+	//Evaluar los tiempos de ejecución 
+	//******************************************************************
+	uswtime(&utime1, &stime1, &wtime1);
   if(FoundIdx != -1)
   {
     printf("%d fue encontrado en el indice %d\n", number,FoundIdx);
@@ -76,6 +85,12 @@ int main(int argc, char *argv[])
   }
   //Liberar memoria
   free(A);
+  //Mostrar los tiempos en formato exponecial
+	printf("\n");
+	printf("real (Tiempo total)  %.10e s\n",  wtime1 - wtime0);
+	printf("user (Tiempo de procesamiento en CPU) %.10e s\n",  utime1 - utime0);
+	printf("sys (Tiempo en acciónes de E/S)  %.10e s\n",  stime1 - stime0);
+	printf("CPU/Wall   %.10f %% \n",100.0 * (utime1 - utime0 + stime1 - stime0) / (wtime1 - wtime0));
 }
 void *Lineal_Search(void *B)
 {
