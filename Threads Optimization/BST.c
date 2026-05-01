@@ -6,6 +6,7 @@ Autor: Saul Ascencion Cruz
 #include <stdlib.h>
 #include <pthread.h>
 #include "BST_TAD.h"
+#include "tiempo.h"
 
 //Struct con los argumentos necesarios para el procesamiento de rangos
 typedef struct RangoArgs
@@ -43,6 +44,7 @@ int main(int argc, char *argv[])
     int number = atoi(argv[2]);
     //Crear arreglo
     int *A = malloc(sizeof(int) * n);
+    double utime0, stime0, wtime0,utime1, stime1, wtime1; //Variables para medición de tiempos 
     //Leer arreglo
     for (int i = 0; i < n; i++)
     {
@@ -52,6 +54,10 @@ int main(int argc, char *argv[])
     arbolBinario B;
     //Inicializar ABB
     Inicializar(&B);
+ //******************************************************************	
+	//Iniciar el conteo del tiempo para las evaluaciones de rendimiento
+	//******************************************************************	
+	uswtime(&utime0, &stime0, &wtime0);
 
     //Crear dos hilos para el procesamiento por hilos
     pthread_t hilos[2];
@@ -101,6 +107,10 @@ int main(int argc, char *argv[])
     e.numero = number;
     //Buscamos el indice e donde se encuentra el numero deseado
     int Idx = Buscar(&B, e);
+    	//******************************************************************	
+	//Evaluar los tiempos de ejecución 
+	//******************************************************************
+	uswtime(&utime1, &stime1, &wtime1);
     //Si la funcion encontro al numero entonces imprime su ubicacion en el arreglo
     if (Idx != -1)
     {
@@ -115,5 +125,12 @@ int main(int argc, char *argv[])
     //Liberacion de memoria
     free(A);
     Destruir(&B);
+ //Mostrar los tiempos en formato exponecial
+	printf("\n");
+	printf("real (Tiempo total)  %.10e s\n",  wtime1 - wtime0);
+	printf("user (Tiempo de procesamiento en CPU) %.10e s\n",  utime1 - utime0);
+	printf("sys (Tiempo en acciónes de E/S)  %.10e s\n",  stime1 - stime0);
+	printf("CPU/Wall   %.10f %% \n",100.0 * (utime1 - utime0 + stime1 - stime0) / (wtime1 - wtime0));
+
     return 0;
 }
