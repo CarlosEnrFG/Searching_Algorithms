@@ -4,7 +4,6 @@ Autor: Saul Ascencion Cruz
 */
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
 #include "BST_TAD.h"
 #include "tiempo.h"
 
