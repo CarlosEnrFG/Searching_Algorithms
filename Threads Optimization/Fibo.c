@@ -1,9 +1,9 @@
 /*
 Autor: Saul Ascencion Cruz
 1 de Mayo del 2026
-Parallel Merge Sort & Binary Search Optimization
+Parallel Merge Sort & Exponential Search
 
-Run: ./Binary_Search [Array Length] [Number to find] <[Array]
+Run: ./Exponential [Array Length] [Number to find] <[Array]
 */
 #include <pthread.h>
 #include <stdio.h>
@@ -34,8 +34,8 @@ typedef struct
 void Sort(Data A[], int p, int q, int r);
 //Crea tatos hilos como el sistema y la computadora pueden, luego ordena secuencialmente
 void *MergeSort(void *args);
-//Realiza una busqueda binaria basica
-int Bin(Data A[], int n, int number);
+//Realiza una busqueda exponencial
+int Algor(Data A[], int n, int number);
 
 int main(int argc, char *argv[])
 {
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
   MergeSort(&B);
 
   // Busqueda binaria sobre el arreglo ya ordenado
-  fIdx = Bin(A, n, number);
+  fIdx = Algor(A, n, number);
 
 	//******************************************************************	
 	//Evaluar los tiempos de ejecución 
@@ -183,26 +183,53 @@ void Sort(Data A[], int p, int q, int r)
   // Liberar la memoria del buffer temporal para evitar fugas (memory leaks)
   free(C);
 }
-int Bin(Data A[], int n, int number)
+
+int Algor(Data A[], int n, int number)
 {
+  // Variables para la serie de Fibonacci
+  int fibo2 = 0;   // (m-2)
+  int fibo1 = 1;   // (m-1)
+  int fibo_M = 1;   // m-esimo
+  // Indice para marcar el desplazamiento
+  int offset = -1;
   int fIdx = -1;
-  int l = 0;
-  int r = n - 1;
-  while (l <= r)
+
+  // Encontrar el numero de Fibonacci mas pequeño mayor o igual a n
+  while (fibo_M < n)
   {
-    int mid = l + (r - l) / 2;
-    if (A[mid].numero == number)
+    fibo2 = fibo1;
+    fibo1 = fibo_M;
+    fibo_M = fibo2 + fibo1;
+  }
+
+  // Mientras haya elementos por procesar
+  while (fibo_M > 1)
+  {
+    // Determinar el indice a comparar
+    int i = (offset + fibo2 < n - 1) ? offset + fibo2 : n - 1;
+
+    // Si el numero es mayor al actual, mover serie dos posiciones
+    if (A[i].numero < number)
     {
-      fIdx = A[mid].Idx;
+      fibo_M = fibo1;
+      fibo1 = fibo2;
+      fibo2 = fibo_M - fibo1;
+      offset = i;
     }
-    if (number > A[mid].numero)
+    // Si el numero es menor al actual, mover serie una posicion
+    else if (A[i].numero > number)
     {
-      l = mid + 1;
+      fibo_M = fibo2;
+      fibo1 = fibo1 - fibo2;
+      fibo2 = fibo_M - fibo1;
     }
+    // Elemento encontrado
     else
     {
-      r = mid - 1;
+      fIdx = A[i].Idx;
+      break;
     }
   }
   return fIdx;
 }
+

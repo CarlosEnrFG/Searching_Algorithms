@@ -1,9 +1,9 @@
 /*
 Autor: Saul Ascencion Cruz
 1 de Mayo del 2026
-Parallel Merge Sort & Binary Search Optimization
+Parallel Merge Sort & Exponential Search
 
-Run: ./Binary_Search [Array Length] [Number to find] <[Array]
+Run: ./Exponential [Array Length] [Number to find] <[Array]
 */
 #include <pthread.h>
 #include <stdio.h>
@@ -34,8 +34,8 @@ typedef struct
 void Sort(Data A[], int p, int q, int r);
 //Crea tatos hilos como el sistema y la computadora pueden, luego ordena secuencialmente
 void *MergeSort(void *args);
-//Realiza una busqueda binaria basica
-int Bin(Data A[], int n, int number);
+//Realiza una busqueda exponencial
+int Algor(Data A[], int n, int number);
 
 int main(int argc, char *argv[])
 {
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
   MergeSort(&B);
 
   // Busqueda binaria sobre el arreglo ya ordenado
-  fIdx = Bin(A, n, number);
+  fIdx = Algor(A, n, number);
 
 	//******************************************************************	
 	//Evaluar los tiempos de ejecución 
@@ -183,19 +183,34 @@ void Sort(Data A[], int p, int q, int r)
   // Liberar la memoria del buffer temporal para evitar fugas (memory leaks)
   free(C);
 }
-int Bin(Data A[], int n, int number)
+int Algor(Data A[], int n, int number)
 {
-  int fIdx = -1;
-  int l = 0;
-  int r = n - 1;
+  int fIdx  = -1;
+  int mid;
+  //Si el elemento está en la primera posición
+  if (A[0].numero == number)
+  {
+    fIdx = A[0].Idx;
+  }
+  // Encontramos el rango para la búsqueda binaria duplicando el índice
+  int i = 1;
+  //Define limites para la segunda etapa de busqueda
+  while (i < n && A[i].numero <= number)
+  {
+    i*=2;
+  }
+  // El límite izquierdo es i/2
+  // El límite derecho es el mínimo entre el i donde nos quedamos y el final del arreglo
+  int l = i / 2;
+  int r = (i < n - 1) ? i : n - 1;
   while (l <= r)
   {
-    int mid = l + (r - l) / 2;
+    mid = l + (r - l) / 2;
     if (A[mid].numero == number)
     {
       fIdx = A[mid].Idx;
     }
-    if (number > A[mid].numero)
+    if (A[mid].numero < number)
     {
       l = mid + 1;
     }
