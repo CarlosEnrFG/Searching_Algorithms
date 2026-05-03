@@ -1,0 +1,4 @@
+gcc -c tiempo.c -o tiempo.o
+gcc tiempo.o fibonacciSearch.c -o fibonacciSearch
+
+./fibonacciSearch 10000000 9482713 < numeros10millones.txt > fibonacciSearch_resultado.txt
